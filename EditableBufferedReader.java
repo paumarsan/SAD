@@ -1,93 +1,66 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.Reader;
+import java.io.InputStreamReader;
 
-
-/**
- *
- * @author virtual
- */
 public class EditableBufferedReader extends BufferedReader {
     
-    private static final int ESCAPE_KEY=27;
-    private static final int BRACKET_KEY=91;
-    private static final int LEFT_KEY=68;
-    private static final int RIGHT_KEY=67;
-    private static final int HOME_KEY=72;
-    private static final int END_KEY=70;
-    private static final int INS_KEY=50;
-    private static final int DEL_KEY=51;
-    private static final int BACKSPACE_KEY=127;
+    //Constants
+    private static final int RIGHT = 'C';
+    private static final int LEFT = 'D';
+    private static final int HOME = 'H';
+    private static final int END = 'F';
+    private static final int DEL = '3';
+    private static final int INS = '2';
+    private static final int BKSP = 127;
 
+    InputStreamReader inputStreamReader;
+    
+    public EditableBufferedReader(InputStreamReader inputStreamReader) {
 
-    private boolean isRawmode=false;
-    private Line line;
+        super(inputStreamReader);
+        this.inputStreamReader = inputStreamReader;
+
+    } 
     
-    public EditableBufferedReader(Reader in) {
-        super(in);
-        line= new Line();
-    }
-    
-    public void setRaw() throws IOException{
-        if(!isRawmode){
-            ProcessBuilder pb = new ProcessBuilder("stty -echo raw");
-            Process process = pb.start();
-            isRawmode=true;
+  public static void setRaw() { // put terminal in raw mode
+        try {
+            Runtime.getRuntime().exec(new String[] { "/bin/sh", "-c", "stty -echo raw </dev/tty" });
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
-    public void unsetRaw() throws IOException{
-        if(isRawmode){
-            ProcessBuilder pb = new ProcessBuilder("stty -echo cooked");
-            Process process = pb.start();
-            isRawmode=false;
+
+    public static void unsetRaw() { // restore terminal to cooked mode
+        try {
+            Runtime.getRuntime().exec(new String[] { "/bin/sh", "-c", "stty echo cooked </dev/tty" });
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
     
     @Override
     public int read() throws IOException{
-       int c=super.read();
-       if(c==ESCAPE_KEY){
-           int nextchar= super.read();
-           if(nextchar==BRACKET_KEY){
-               int action= super.read();
-               this.realitzarSequenciaEscape(action);
-           }
-       }else{
-           realitzarCaracterNormal(c);
-       }
-       return c;
-           
-    }
-    
-    private void realitzarSequenciaEscape(int action){
-        switch (action){
-            case LEFT_KEY: //flecha dreta
-            line.moveLeft();
-            break;
-            case RIGHT_KEY:
-            line.moveRight(); 
-            break;   
-            case HOME_KEY:
-            line.moveToBeginning();
-            break;   
-            case END_KEY:
-            line.moveToEnd(); 
-            break;   
-            case INS_KEY:
-            line.toggleInsertMode();
-            break;
-            case DEL_KEY:
-            line.backspace();
-            break;
+        StringBuilder str = new StringBuilder();
+        try{
+            while(!this.ready()){
                 
-                
+            }
+            while(this.ready())
+            {
+                str.append((char)super.read());
+            }
+            switch(str.toString()) {
+                case "\033[2~":
+                case "\033[3~": 
+                case "\033[C": 
+                case "\033[D":  
+                case "\033[F":   
+                case "\033[H":  return -str.charAt(2);
+                default:        return  str.charAt(str.length() - 1);
+            }
+        }catch (IOException e){
+            throw e;
         }
-        
     }
     
     private void realitzarCaracterNormal(int c){
@@ -99,6 +72,34 @@ public class EditableBufferedReader extends BufferedReader {
     }
     
     public String readLine() throws IOException{
-        return line.getText();
+        try{
+            setRaw();
+            Line line = new Line();
+            int key;
+            while ((key = this.read()) != '\r'){        //llegeix fins retorn de carro
+                switch(key) {
+                    case -RIGHT: line.right();
+                    break;
+                    case -LEFT: line.left();
+                    break;
+                    case -HOME: line.home();
+                    break;
+                    case -END: line.end();
+                    break;
+                    case -INS: line.insert();
+                    break;
+                    case -DEL: line.delete();
+                    break;
+                    case BKSP: line.backSpace();
+                    break;
+                    default: line.addCharacter((char) key);
+                }
+            }
+            return line.toString();
+        } catch (IOException e) {
+            throw e;
+        } finally {
+            unsetRaw();
+        }
     }
 }
