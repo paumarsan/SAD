@@ -25,7 +25,7 @@ public class EditableBufferedReader extends BufferedReader {
      
     public static void setRaw() { // put terminal in raw mode
         try {
-            Runtime.getRuntime().exec(new String[] { "/bin/sh", "-c", "stty -echo raw </dev/tty" });
+            Runtime.getRuntime().exec(new String[] { "/bin/sh", "-c", "stty -echo raw </dev/tty" }).waitFor();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -33,7 +33,7 @@ public class EditableBufferedReader extends BufferedReader {
 
     public static void unsetRaw() { // restore terminal to cooked mode
         try {
-            Runtime.getRuntime().exec(new String[] { "/bin/sh", "-c", "stty echo cooked </dev/tty" });
+            Runtime.getRuntime().exec(new String[] { "/bin/sh", "-c", "stty echo cooked </dev/tty" }).waitFor();
         } catch (IOException e) {
             e.printStackTrace();
         }
