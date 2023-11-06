@@ -3,10 +3,10 @@ import java.util.Observable;
 
 public class Line extends Observable {
   
-  int position;
-  boolean insert;
-  ArrayList<Character> line;
-  Console console;
+  private int position;
+  private boolean insert;
+  private ArrayList<Character> line;
+  private Console console;
 
   public Line (){
     line = new ArrayList<>();
