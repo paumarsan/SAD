@@ -5,3 +5,4 @@ Pràctica 1:
 - Practica1_MVC : Editor de text, seguint el patró MVC.
 
 Pràctica 2:
+- Practica2 : Xat, amb client textual.
