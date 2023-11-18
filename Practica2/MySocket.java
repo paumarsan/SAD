@@ -30,7 +30,7 @@ public class MySocket extends Socket {
     public void teclat_to_server() throws IOException{
         BufferedReader lector = new BufferedReader(new InputStreamReader(System.in));
         String text;
-        while ((text = this.reader.readLine())!=null){
+        while ((text = lector.readLine())!=null){
             this.writer.println(text);
             text=lector.readLine();
         }
