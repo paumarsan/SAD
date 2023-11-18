@@ -82,22 +82,17 @@ public class MyServerSocket extends ServerSocket {
     public void read_teclat() throws IOException {
 
         BufferedReader teclat_reader = new BufferedReader(new InputStreamReader(System.in));
-        String text = teclat_reader.readLine();
-
+        String text;
         while ((text = teclat_reader.readLine())!=null) {
             this.write_all("ADMIN: " + text);
-            text = teclat_reader.readLine();
         }
     }
 
     public void client_to_server(String username) throws IOException {
-
-        String text = this.read_client(username);
-
-        while (text != null) {
+        String text;
+        while ((text = this.read_client(username)) != null) {
             System.out.println(username + ": " + text);
             this.write_allmenysun(username, username + ": " + text);
-            text = this.read_client(username);
         }
     }
 
