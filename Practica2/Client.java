@@ -9,26 +9,26 @@ public class Client {
         // args[0] = ip, args[1] = port, args[2] = username
         try (MySocket socket_usuari = new MySocket(args[0], Integer.parseInt(args[1]), args[2])) {
 
-            new Thread(new Runnable() { // New thread to send the messages written by the client to the server
+            new Thread(new Runnable() { // Nou thread per enviar els missatges escrits per el client al server
                 @Override
-                public void run() { // run() is the method that is executed when the thread is started
+                public void run() {
 
                     try {
-                        socket_usuari.teclat_to_server(); // We read what is written in the console to send it
-                    } catch (IOException exception) { // If there is an error, print the stack trace
+                        socket_usuari.teclat_to_server(); // Llegim el que hi ha al teclat per enviar-ho
+                    } catch (IOException exception) {
                         exception.printStackTrace();
                     }
                 }
-            }).start(); // Start the thread
+            }).start();
 
-            // Main thread to read the messages from the server
+            // Main thread per llegir els misstges del server
             socket_usuari.server_to_client();
 
-        } catch (UnknownHostException exception) { // If there is an error, print the stack trace
+        } catch (UnknownHostException exception) { 
 
             exception.printStackTrace();
 
-        } catch (IOException exception) { // If there is an error, print the stack trace
+        } catch (IOException exception) {
 
             exception.printStackTrace();
         }
