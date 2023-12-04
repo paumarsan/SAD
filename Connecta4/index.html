@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Connecta 4</title>
+  <style>
+    #game-board {
+      display: grid;
+      grid-template-columns: repeat(7, 50px);
+      gap: 5px;
+    }
+
+    .cell {
+      width: 50px;
+      height: 50px;
+      border: 1px solid #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .cell:hover {
+      background-color: #ddd;
+    }
+  </style>
+</head>
+<body>
+  <h1>Connect 4</h1>
+  <div id="game-board"></div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const socket = io();
+
+      const boardElement = document.getElementById('game-board');
+
+      const createCell = (row, col) => {
+        const cell = document.createElement('div');
+        cell.classList.add('cell');
+        cell.dataset.row = row;
+        cell.dataset.col = col;
+        cell.addEventListener('click', () => makeMove(row, col));
+        return cell;
+      };
+
+      const makeMove = (row, col) => {
+        socket.emit('makeMove', { roomId: 'your_room_id', column: col });
+      };
+
+      const updateBoard = (board) => {
+        boardElement.innerHTML = '';
+
+        for (let row = 0; row < board.length; row++) {
+          for (let col = 0; col < board[row].length; col++) {
+            const cell = createCell(row, col);
+
+            if (board[row][col] === 1) {
+              cell.style.backgroundColor = 'red';
+            } else if (board[row][col] === 2) {
+              cell.style.backgroundColor = 'yellow';
+            }
+
+            boardElement.appendChild(cell);
+          }
+        }
+      };
+
+      socket.on('updateGame', (game) => {
+        updateBoard(game.board);
+      });
+
+      socket.on('errorMessage', (message) => {
+        alert(message);
+      });
+
+      socket.on('gameOver', (data) => {
+        alert(`Game over! Player ${data.winner} wins!`);
+      });
+
+      // Join the game room when the page loads
+      socket.emit('joinGame', 'your_room_id');
+    });
+  </script>
+</body>
+</html>
