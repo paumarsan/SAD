@@ -1,0 +1,189 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Connecta 4</title>
+  <style>
+    /* Add your CSS styles for the game board here */
+    body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+  }
+
+  #input-nom-jugador {
+    margin-bottom: 10px;
+    padding: 5px;
+    font-size: 16px;
+  }
+
+  #info-jugadors {
+    position: absolute;
+    left: 10px;
+    top: 10px;
+  }
+
+  .vermell {
+    color: red;
+  }
+
+  .groc {
+    color: yellow;
+  }
+
+  .jugador-actual {
+    font-weight: bold;
+  }
+
+  #boto-unirse-partida {
+    padding: 10px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+
+  #contenidor-joc {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px; /* ajustar */
+  }
+
+  #titol-joc {
+    font-size: 24px; /* ajustar */
+    margin-bottom: 10px; /* ajustar */
+  }
+
+  #tauler-joc {
+    display: grid;
+    grid-template-columns: repeat(7, 50px);
+    gap: 5px;
+  }
+
+  .cell {
+    width: 50px;
+    height: 50px;
+    border: 1px solid #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+
+  .cell:hover {
+    background-color: #ddd;
+  }
+
+  #conclusions-joc {
+    margin-top: 20px; /* ajustar */
+  }
+  </style>
+</head>
+<body>
+  <h1 id="titol-joc">Connecta 4</h1>
+  <div id="contenidor-joc">
+    <div id="info-jugadors">
+    </div>
+    <input type="text" id="input-nom-jugador" placeholder="Insereix el teu nom">
+    <button id="boto-unirse-partida">Jugar</button>
+
+    <div id="tauler-joc"></div>
+    <div id="conclusions-joc"></div>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const socket = io();
+      const inputNomJugador = document.getElementById('input-nom-jugador');
+      const botoUnirsePartida = document.getElementById('boto-unirse-partida');
+      const InfoJugadors = document.getElementById('info-jugadors');
+
+      const taulerElement = document.getElementById('tauler-joc');
+
+      botoUnirsePartida.addEventListener('click', () => {
+      const nomJugador = inputNomJugador.value.trim();
+        if (nomJugador) {
+          socket.emit('unirsePartida', {nomJugador});
+          inputNomJugador.disabled = true;
+          botoUnirsePartida.style.display = 'none';
+        }else{
+          alert('Posa el teu nom >:(');
+        }
+      });
+
+      const createCell = (row, col) => {
+        const cell = document.createElement('div');
+        cell.classList.add('cell');
+        cell.dataset.row = row;
+        cell.dataset.col = col;
+        cell.addEventListener('click', () => ferMoviment(row, col));
+        return cell;
+      };
+
+      const ferMoviment = (fila, columna) => {
+        socket.emit('ferMoviment', { columna });
+      };
+
+      const actualitzarTauler = (tauler) => {
+        taulerElement.innerHTML = '';
+
+        for (let fila = 0; fila < tauler.length; fila++) {
+          for (let columna = 0; columna < tauler[fila].length; columna++) {
+            const cell = createCell(fila, columna);
+
+            if (tauler[fila][columna] === 1) {
+              cell.style.backgroundColor = 'red';
+            } else if (tauler[fila][columna] === 2) {
+              cell.style.backgroundColor = 'yellow';
+            }
+
+            taulerElement.appendChild(cell);
+          }
+        }
+      };
+
+      const conclusionsJoc = document.getElementById('conclusions-joc');
+
+      socket.on('gameOver', (data) => {
+        if (data.winner === 'empat') {
+          conclusionsJoc.innerText = 'Empat!';
+          alert(`Heu empatat!`);
+        } else {
+        const ColorJugador = data.winner.color === 1 ? 'vermell' : 'groc';
+        conclusionsJoc.innerHTML+= `<span>Ha guanyat: <span class="${ColorJugador}"><b>${data.winner.name}</b></span>!</span>`;
+        alert(`Ha guanyat ${data.winner.name}!`);
+        }
+        // Afegir un botó per reiniciar la partida
+        conclusionsJoc.innerHTML += '<br><button id="boto-reiniciar">Reiniciar Partida</button>';
+        document.getElementById('boto-reiniciar').addEventListener('click', () => {
+          socket.emit('reiniciarJoc');
+        });
+      });
+
+      socket.on('amagarResultat', () => {
+      // Ocultar el missatge del resultat i el botó de reiniciar la partida
+        conclusionsJoc.innerHTML = '';
+      });
+
+      socket.on('actualitzarJoc', (joc) => {
+        actualitzarTauler(joc.tauler);
+      });
+
+      socket.on('missatgeError', (message) => {
+        alert(message);
+      });
+
+      socket.on('infoJugadors', (info) => {
+        InfoJugadors.innerHTML = '<h2>Jugadors:</h2>';
+        info.jugadors.forEach((jugador) => {
+          const tipusdelletra = info.tornJugador === jugador.color-1 ? 'jugador-actual' : '';
+          const ColorJugador = jugador.color === 1 ? 'vermell' : 'groc';
+          InfoJugadors.innerHTML += `<p class="${ColorJugador} ${tipusdelletra}">${jugador.name}</p>`;
+        });
+      });
+    });
+  </script>
+</body>
+</html>
