@@ -22,7 +22,8 @@ function handleConnection(socket, io) {
   });
 
   socket.on('ferMoviment', ({ columna }) => {
-    if (joc && joc.jugadors.some(player => player.id === socket.id) && joc.tornJugador === joc.jugadors.findIndex(player => player.id === socket.id)) {
+    if (joc && joc.jugadors.some(player => player.id === socket.id)
+        && joc.tornJugador === joc.jugadors.findIndex(player => player.id === socket.id)) {
       if (!columnaPlena(joc.tauler, columna)) {
         tirarPeça(joc.tauler, columna, joc.tornJugador + 1);
         io.emit('actualitzarJoc', joc);
