@@ -140,13 +140,9 @@
 
       socket.on('amagarResultat', () => {
       // Ocultar el missatge del resultat i el botó de reiniciar la partida
-       amagarResultat();
+        conclusionsJoc.innerHTML = '';
       });
 
-      function amagarResultat() {
-      // Ocultar el missatge del resultat i el botó de reiniciar la partida
-        conclusionsJoc.innerHTML = '';
-      }
       socket.on('actualitzarJoc', (joc) => {
         actualitzarTauler(joc.tauler);
       });
