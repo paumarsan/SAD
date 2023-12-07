@@ -1,4 +1,3 @@
-
 const { inicialitzarTauler, columnaPlena, tirarPeça, checkVictoria } = require('./connecta4');
 
 const joc = {
@@ -11,9 +10,11 @@ const joc = {
 function handleConnection(socket, io) {
   socket.on('unirsePartida', ({nomJugador}) => {
     if (joc.jugadors.length === 0) {
-      joc.jugadors.push({ id: socket.id, name: nomJugador });
+      joc.jugadors.push({ id: socket.id, name: nomJugador, color: 1  });
+      io.emit('infoJugadors', {jugadors: joc.jugadors, tornJugador: joc.tornJugador});
     }else if (joc.jugadors.length === 1){
-      joc.jugadors.push({ id: socket.id, name: nomJugador });
+      joc.jugadors.push({ id: socket.id, name: nomJugador, color: 2 });
+      io.emit('infoJugadors', {jugadors: joc.jugadors, tornJugador: joc.tornJugador});
       io.emit('actualitzarJoc' , joc);
     } else {
       socket.emit('missatgeError', 'La sala de joc està plena!');
@@ -33,6 +34,7 @@ function handleConnection(socket, io) {
           io.emit('gameOver', { winner: jugadorGuanyador});
         } else {
           joc.tornJugador = 1 - joc.tornJugador; // Canvia torn del jugador
+          io.emit('infoJugadors', {jugadors: joc.jugadors, tornJugador: joc.tornJugador});
         }
       } else {
         socket.emit('missatgeError', 'La columna està plena!');
@@ -46,7 +48,6 @@ function handleConnection(socket, io) {
       joc.tauler = inicialitzarTauler();
       io.emit('actualitzarJoc', joc);
       io.emit('amagarResultat');
-
   });
 }
 
