@@ -4,7 +4,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Connecta 4</title>
   <style>
-    /* Disseny visual del joc */
+    /* Add your CSS styles for the game board here */
     body {
     display: flex;
     flex-direction: column;
@@ -84,7 +84,8 @@
 <body>
   <h1 id="titol-joc">Connecta 4</h1>
   <div id="contenidor-joc">
-    <div id="info-jugadors"></div>
+    <div id="info-jugadors">
+    </div>
     <input type="text" id="input-nom-jugador" placeholder="Insereix el teu nom">
     <button id="boto-unirse-partida">Jugar</button>
 
@@ -98,7 +99,7 @@
       const inputNomJugador = document.getElementById('input-nom-jugador');
       const botoUnirsePartida = document.getElementById('boto-unirse-partida');
       const InfoJugadors = document.getElementById('info-jugadors');
-
+      const conclusionsJoc = document.getElementById('conclusions-joc');
       const taulerElement = document.getElementById('tauler-joc');
 
       botoUnirsePartida.addEventListener('click', () => {
@@ -109,6 +110,22 @@
           botoUnirsePartida.style.display = 'none';
         }else{
           alert('Posa el teu nom >:(');
+        }
+      });
+
+      socket.on('actualitzarJoc', (joc) => {
+        taulerElement.innerHTML = '';
+        const taulerJoc=joc.tauler;
+        for (let fila = 0; fila < taulerJoc.length; fila++) {
+          for (let columna = 0; columna < taulerJoc[fila].length; columna++) {
+            const cell = createCell(fila, columna);
+            if (taulerJoc[fila][columna] === 1) {
+              cell.style.backgroundColor = 'red';
+            } else if (taulerJoc[fila][columna] === 2) {
+              cell.style.backgroundColor = 'yellow';
+            }
+            taulerElement.appendChild(cell);
+          }
         }
       });
 
@@ -124,26 +141,6 @@
       const ferMoviment = (fila, columna) => {
         socket.emit('ferMoviment', { columna });
       };
-
-      const actualitzarTauler = (tauler) => {
-        taulerElement.innerHTML = '';
-
-        for (let fila = 0; fila < tauler.length; fila++) {
-          for (let columna = 0; columna < tauler[fila].length; columna++) {
-            const cell = createCell(fila, columna);
-
-            if (tauler[fila][columna] === 1) {
-              cell.style.backgroundColor = 'red';
-            } else if (tauler[fila][columna] === 2) {
-              cell.style.backgroundColor = 'yellow';
-            }
-
-            taulerElement.appendChild(cell);
-          }
-        }
-      };
-
-      const conclusionsJoc = document.getElementById('conclusions-joc');
 
       socket.on('gameOver', (data) => {
         if (data.winner === 'empat') {
@@ -164,10 +161,6 @@
       socket.on('amagarResultat', () => {
       // Ocultar el missatge del resultat i el botó de reiniciar la partida
         conclusionsJoc.innerHTML = '';
-      });
-
-      socket.on('actualitzarJoc', (joc) => {
-        actualitzarTauler(joc.tauler);
       });
 
       socket.on('missatgeError', (message) => {
