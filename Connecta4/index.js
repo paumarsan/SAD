@@ -10,6 +10,7 @@ const io = socketIO(server);
 app.use(express.static(__dirname));
 
 io.on('connection', (socket) => {
+  console.log(`Client connectat: ${socket.id}`);
   gameManager.handleConnection(socket, io);
 });
 
