@@ -52,10 +52,10 @@ function handleConnection(socket, io) {
       joc.tauler = inicialitzarTauler();
       io.emit('actualitzarJoc', joc);
       io.emit('amagarResultat');
-
   });
 
-  socket.on('disconnect', () => {
+  socket.on('disconnect', () => 
+    // Administrar la desconnexió d'un jugador
     console.log(`Client desconnectat: ${socket.id}`);
     joc.jugadors=joc.jugadors.filter((player) => player.id !== socket.id);
     if(joc.jugadors.length === 0){
