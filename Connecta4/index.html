@@ -83,15 +83,11 @@
 </head>
 <body>
   <h1 id="titol-joc">Connecta 4</h1>
-  <div id="contenidor-joc">
-    <div id="info-jugadors">
-    </div>
+    <div id="info-jugadors"></div>
     <input type="text" id="input-nom-jugador" placeholder="Insereix el teu nom">
     <button id="boto-unirse-partida">Jugar</button>
-
     <div id="tauler-joc"></div>
     <div id="conclusions-joc"></div>
-  </div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
