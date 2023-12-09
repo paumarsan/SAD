@@ -6,6 +6,7 @@ const joc = {
   tornJugador: 0,
 };
 
+
 function handleConnection(socket, io) {
   socket.on('unirsePartida', ({nomJugador}) => {
     if (joc.jugadors.length === 0) {
@@ -23,10 +24,9 @@ function handleConnection(socket, io) {
       socket.emit('missatgeError', 'La sala de joc està plena!');
     }
   });
-  
+
   socket.on('ferMoviment', ({ columna }) => {
-    if (joc && joc.jugadors.some(player => player.id === socket.id)
-        && joc.tornJugador === joc.jugadors.findIndex(player => player.id === socket.id)) {
+    if (joc.jugadors.length === 2 && joc.tornJugador === joc.jugadors.findIndex(player => player.id === socket.id)) {
       if (!columnaPlena(joc.tauler, columna)) {
         tirarPeça(joc.tauler, columna, joc.tornJugador + 1);
         io.emit('actualitzarJoc', joc);
@@ -52,10 +52,10 @@ function handleConnection(socket, io) {
       joc.tauler = inicialitzarTauler();
       io.emit('actualitzarJoc', joc);
       io.emit('amagarResultat');
+
   });
 
   socket.on('disconnect', () => {
-    //Administar una desconnexió
     console.log(`Client desconnectat: ${socket.id}`);
     joc.jugadors=joc.jugadors.filter((player) => player.id !== socket.id);
     if(joc.jugadors.length === 0){
