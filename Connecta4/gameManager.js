@@ -58,10 +58,9 @@ function handleConnection(socket, io) {
     //Administar una desconnexió
     console.log(`Client desconnectat: ${socket.id}`);
     joc.jugadors=joc.jugadors.filter((player) => player.id !== socket.id);
-    io.emit('infoJugadors', {jugadors: joc.jugadors, tornJugador: joc.tornJugador});
     if(joc.jugadors.length === 0){
       joc.tauler=inicialitzarTauler();
-      tornJugador=0;
+      joc.tornJugador=0;
     }
     io.emit('infoJugadors', {jugadors: joc.jugadors, tornJugador: joc.tornJugador});
     io.emit('actualitzarJoc', joc);
