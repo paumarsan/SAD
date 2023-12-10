@@ -56,7 +56,6 @@ function handleConnection(socket, io) {
       joc.tauler = inicialitzarTauler();
       io.emit('actualitzarJoc', joc);
       io.emit('amagarResultat');
-
   });
 
   socket.on('disconnect', () => {
