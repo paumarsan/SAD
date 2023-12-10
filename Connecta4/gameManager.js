@@ -55,6 +55,7 @@ function handleConnection(socket, io) {
       joc.tornJugador = 0;
       joc.tauler = inicialitzarTauler();
       io.emit('actualitzarJoc', joc);
+      io.emit('infoJugadors', {jugadors: joc.jugadors, tornJugador: joc.tornJugador});
       io.emit('amagarResultat');
   });
 
