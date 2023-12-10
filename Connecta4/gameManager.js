@@ -68,7 +68,6 @@ function handleConnection(socket, io) {
       joc.tornJugador=0;
     }
     io.emit('infoJugadors', {jugadors: joc.jugadors, tornJugador: joc.tornJugador});
-    io.emit('actualitzarJoc', joc);
   });
 }
 
