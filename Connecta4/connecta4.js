@@ -75,9 +75,7 @@ function checkVictoria(tauler, jugador) {
     }
   }
 
-  const taulerPle = tauler.every(fila => fila.every(cell => cell !== 0));
-
-  if (taulerPle) {
+  if (tauler.every(fila => fila.every(cell => cell !== 0))) {
     return 'tie';
   }
 
