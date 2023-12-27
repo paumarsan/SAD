@@ -1,23 +1,28 @@
 import java.net.*;
 
-public class MyServerSocket {
-    ServerSocket serversocket;
+public class MyServerSocket extend ServerSocket {
+    MySocket socket;
 
-    public MyServerSocket(){
-        try{
-            serversocket = new ServerSocket(8080);
-        }catch(Exception e){
-            e.printStackTrace();
-        }
+    public MyServerSocket(int port) throws Exception {
+        super(port);
     }
 
-    public MySocket accept(){
-        try{
-            Socket sc = serversocket.accept();            
-            return new MySocket(sc);                        
-        }catch(Exception e){
+
+    @Override
+    public MySocket accept() {
+        try {
+            socket = new MySocket(super.accept());
+        } catch (Exception e) {
             e.printStackTrace();
-            return null;
+        }
+        return socket;
+    }
+
+    public void close() {
+        try {
+            super.close();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }
