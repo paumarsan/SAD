@@ -2,14 +2,13 @@ import java.io.IOException;
 import java.util.*;
 public class Server implements Runnable {
 
-  public static Map<String, MySocket> clientsMap = new HashMap<String, MySocket>(); // diccionari de parells
-                                                                                    // (nick,socket)
+  public static Map<String, MySocket> clientsMap = new HashMap<String, MySocket>(); 
   private static final ReentrantReadWriteLock rwl = new ReentrantReadWriteLock();
-  private static final Lock r = rwl.readLock(); // lock de lectura
-  private static final Lock w = rwl.writeLock(); // lock d'escriptura
+  private static final Lock r = rwl.readLock();
+  private static final Lock w = rwl.writeLock(); 
 
   public MySocket mySocket;
-  public static boolean validUser = false; // boolean per si nom d'usuari introduit es valid
+  public static boolean validUser = false; 
   public String nick;
 
   public Server(String nickName, MySocket mySocket) {
@@ -25,14 +24,14 @@ public class Server implements Runnable {
       String name;
       while (true) {
         clientSocket = server.accept();
-        while (!validUser) { // fins que no tinguem un nom d'usuari valid
+        while (!validUser) {
           clientSocket.printLine("Introdueix el nom d'usuari: ");
           name = clientSocket.readLine();
-          if (usedNickName(name)) { // comprovem que no existeixi el nom dins del diccionari
+          if (usedNickName(name)) {
             clientSocket.printLine(" " + name + " ja existeix, escull un altre nom d'usuari: ");
           } else {
-            putClient(name, clientSocket); // afegim el nou socket al diccionari
-            new Thread(new Server(name, clientSocket)).start(); // nou thread del fill del servidor que aten al client       
+            putClient(name, clientSocket); 
+            new Thread(new Server(name, clientSocket)).start();      
             validUser = true;
             clientSocket.printLine("........ " + name + " t'has unit al xat ........");
             System.out.println("........ " + name + " s'ha unit al xat ........");
@@ -59,7 +58,7 @@ public class Server implements Runnable {
     boolean used;
     r.lock();
     try {
-      used = clientsMap.containsKey(name); // comprovem que el nick no estigui ja en el diccionari
+      used = clientsMap.containsKey(name); 
     } finally {
       r.unlock();
     }
@@ -69,7 +68,7 @@ public class Server implements Runnable {
   public static void putClient(String name, MySocket clientSocket) {
     w.lock();
     try {
-      clientsMap.put(name, clientSocket); // afegim el nou socket al diccionari amb un nom valid
+      clientsMap.put(name, clientSocket); 
     } finally {
       w.unlock();
     }
@@ -78,7 +77,7 @@ public class Server implements Runnable {
   public static void closeClient(String nickName) {
     r.lock();
     try {
-      clientsMap.get(nickName).close(); // tanquem el socket
+      clientsMap.get(nickName).close(); 
     } finally {
       r.unlock();
     }
@@ -87,7 +86,7 @@ public class Server implements Runnable {
   public static void removeClient(String nickName) {
     w.lock();
     try {
-      clientsMap.remove(nickName); // borrem el socket del diccionari
+      clientsMap.remove(nickName); 
     } finally {
       w.unlock();
     }
@@ -98,7 +97,7 @@ public class Server implements Runnable {
     while ((line = clientsMap.get(nickName).readLine()) != null) {
       r.lock();
       try {
-        for (HashMap.Entry<String, MySocket> entry : clientsMap.entrySet()) { // per tots els usuaris del xat
+        for (HashMap.Entry<String, MySocket> entry : clientsMap.entrySet()) { 
           if (!entry.getKey().equals(nickName)) {
             entry.getValue().printLine(nickName + " : " + line);
           }
