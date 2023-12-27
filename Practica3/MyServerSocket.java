@@ -7,7 +7,6 @@ public class MyServerSocket extend ServerSocket {
         super(port);
     }
 
-
     @Override
     public MySocket accept() {
         try {
