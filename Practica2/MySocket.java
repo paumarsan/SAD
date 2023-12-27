@@ -6,39 +6,34 @@ import java.io.OutputStreamWriter;
 import java.io.IOException;
 
 public class MySocket extends Socket {
-
     Socket socket;
-    BufferedReader buffReader;
-    PrintWriter printWriter;
-
-
+    BufferedReader reader;
+    PrintWriter printer;
+    
     public MySocket(Socket socket) {
-
         try {
             this.socket = socket;
-            buffReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            printWriter = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
+            reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            printer = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     public MySocket(String host, int port) {
-
         try {
             socket = new Socket(host, port);
-            buffReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            printWriter = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
+            reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            printer = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     public String readLine() {
-
         String line = null;
         try {
-            line = buffReader.readLine();
+            line = reader.readLine();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -46,21 +41,18 @@ public class MySocket extends Socket {
     }
 
     public void printLine(String line) {
-
-        printWriter.println(line);
-        printWriter.flush();
+        printer.println(line);
+        printer.flush();
     }
 
     public void close() {
-
         try {
-            buffReader.close();
-            printWriter.close();
+            reader.close();
+            printer.close();
             socket.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
 }
