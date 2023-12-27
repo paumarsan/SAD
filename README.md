@@ -7,5 +7,8 @@ Pràctica 1:
 Pràctica 2:
 - Practica2: Xat, amb client textual.
 
+Pràctica 3:
+- Practica3: Xat gràfic amb Swing
+
 Projecte:
 - Connecta4: Joc 1vs1 utilitzant Javascript
