@@ -1,77 +1,44 @@
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 
-public class ClientGUI {
-    private JTextField messageField;
-    private JTextArea chatArea;
-    private Client client;
+public class Client {
+    private BufferedReader bufferedReader;
+    private MySocket mySocket;
+    private ClientGUI clientGUI;
 
-    public ClientGUI() {
-        JFrame frame = new JFrame("Chat Client");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(400, 300);
-        frame.setLayout(new BorderLayout());
-
-        chatArea = new JTextArea();
-        chatArea.setEditable(false);
-        JScrollPane scrollPane = new JScrollPane(chatArea);
-        frame.add(scrollPane, BorderLayout.CENTER);
-
-        messageField = new JTextField();
-        JButton sendButton = new JButton("Send");
-        sendButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                sendMessage();
-            }
-        });
-
-        JPanel inputPanel = new JPanel();
-        inputPanel.setLayout(new BorderLayout());
-        inputPanel.add(messageField, BorderLayout.CENTER);
-        inputPanel.add(sendButton, BorderLayout.EAST);
-
-        frame.add(inputPanel, BorderLayout.SOUTH);
-
-        frame.setVisible(true);
-
-        client = new Client();
-        initClient();
+    public Client() {
+        bufferedReader = new BufferedReader(new InputStreamReader(System.in));
+        clientGUI = new ClientGUI(this);
     }
 
-    private void initClient() {
-        String nick = JOptionPane.showInputDialog("Introduce tu nombre:");
-        client.writeLine(nick);
+    public void connectToServer(String nick, String host, int port) {
+        mySocket = new MySocket(nick, host, port);
+        mySocket.writeLine(nick);
 
         new Thread(() -> {
-            while (true) {
-                String message = client.readLine();
-                appendMessage(message);
+            try {
+                while (true) {
+                    String message = mySocket.readLine();
+                    clientGUI.appendMessage(message);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }).start();
     }
 
-    private void sendMessage() {
-        String message = messageField.getText();
-        if (!message.isEmpty()) {
-            client.writeLine(message);
-            messageField.setText("");
+    public void sendMessage(String message) {
+        if (mySocket != null) {
+            mySocket.writeLine(message);
         }
     }
 
-    private void appendMessage(String message) {
-        chatArea.append(message + "\n");
-    }
-
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                new ClientGUI();
-            }
+        SwingUtilities.invokeLater(() -> {
+            Client client = new Client();
+            String nick = JOptionPane.showInputDialog("Introduce tu nombre:");
+            client.connectToServer(nick, "localhost", 40000);
         });
     }
 }
