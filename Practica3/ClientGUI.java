@@ -11,7 +11,7 @@ public class ClientGUI {
     public ClientGUI(Client client) {
         this.client = client;
 
-        JFrame frame = new JFrame("Chat Client");
+        JFrame frame = new JFrame("Chat");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(400, 300);
         frame.setLayout(new BorderLayout());
@@ -22,7 +22,7 @@ public class ClientGUI {
         frame.add(scrollPane, BorderLayout.CENTER);
 
         messageField = new JTextField();
-        JButton sendButton = new JButton("Send");
+        JButton sendButton = new JButton("Enviar");
         sendButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
