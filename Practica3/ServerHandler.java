@@ -11,7 +11,7 @@ public class ServerHandler {
     public static void handleAccept(ServerSocketChannel mySocket,
     SelectionKey key, HashSet<String> users, Selector selector) throws IOException {
 
-        System.out.println("Connection Accepted...");
+        System.out.println("Connexio Acceptada...");
 
         SocketChannel client = mySocket.accept();
         client.configureBlocking(false);
@@ -21,7 +21,6 @@ public class ServerHandler {
         client.read(bufferNick);
         String nick = BufferHandler.readBuffer(bufferNick);
 
-        //Assegura agafar el nick correctament.
         while(!(nick.length() > 0)){
             client.read(bufferNick);
             nick = BufferHandler.readBuffer(bufferNick);
@@ -29,10 +28,10 @@ public class ServerHandler {
 
         users.add(nick);
         clientKey.attach(nick);
-        System.out.println("New costumer: " + clientKey.attachment());
+        System.out.println("Nou client: " + clientKey.attachment());
 
         bufferNick.clear();
-        String str = "A new user has joined: " + nick;
+        String str = "Un now usuari s'ha unit: " + nick;
         BufferHandler.writeBuffer(bufferNick, str);
 
 
@@ -45,7 +44,6 @@ public class ServerHandler {
                 bufferNick.flip();
             }
         }
-
         UsersHandler.sendUsers(users, selector);
     }
 
@@ -53,7 +51,7 @@ public class ServerHandler {
     public static void handleRead(SelectionKey selectionKey, HashSet<String> users, Selector selector)
     throws IOException {
 
-        System.out.println("Reading...");
+        System.out.println("Llegin...");
 
         SocketChannel client = (SocketChannel) selectionKey.channel();
 
@@ -68,7 +66,7 @@ public class ServerHandler {
             users.remove(selectionKey.attachment());
 
             buffer.clear();
-            data = "The user " + selectionKey.attachment() + " has left";
+            data = "L'usuari" + selectionKey.attachment() + " s'ha anat";
             BufferHandler.writeBuffer(buffer, data);
 
             for(SelectionKey sk: selector.keys()){
@@ -81,21 +79,16 @@ public class ServerHandler {
 
                 }
             }
-
             UsersHandler.sendUsers(users, selector);
 
             client.close();
 
-            System.out.println("Connection closed...");
+            System.out.println("Connexio tancada...");
 
             }else{
-
-                //Formatem el missatge a enviar
                 data = ((String)selectionKey.attachment()) + ": " +  data;
                 buffer.clear();
                 BufferHandler.writeBuffer(buffer, data);
-
-                //Reenviem el missatge a la resta de clients.
                 for(SelectionKey sk: selector.keys()){
 
                     if((sk.attachment() != selectionKey.attachment()) & (sk.attachment() != null)){
@@ -105,8 +98,6 @@ public class ServerHandler {
                     }
                 }
             }
-
-
         }
 
     }
