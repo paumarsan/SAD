@@ -28,7 +28,7 @@ public class UsersHandler {
 
                     SocketChannel c = (SocketChannel) sk.channel();
                     c.write(buffer);
-                    System.out.println("Users list sent to: " +sk.attachment());
+                    System.out.println("Informació enviada a: " +sk.attachment());
                     buffer.flip();
                 }
 
