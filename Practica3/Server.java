@@ -1,38 +1,58 @@
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.ServerSocket;
+import java.nio.channels.SelectionKey;
+import java.nio.channels.Selector;
+import java.nio.channels.ServerSocketChannel;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
-public class Server {
+
+public class NIOServer {
+
+    private static Selector selector = null;
+    private static HashSet<String> users = new HashSet<>();
+
+
     public static void main(String[] args) {
-        Map<String, MySocket> mySocketMap = new ConcurrentHashMap<String,MySocket>();
-        MyServerSocket myServerSocket = new MyServerSocket(5000);
-        
-        while(true){
-            MySocket socket = myServerSocket.accept();
-            
-            new Thread() {
-                public void run() {
-                    try{
-                    String nick = socket.readLine();
-                    mySocketMap.put(nick,socket);
-                    System.out.println("Connexio Realitzada");
 
-                    String line;
-                    while ((line = socket.readLine()) != null) {
-                        System.out.println(line);
-                        for (String n : mySocketMap.keySet()){
-                            if(n!=nick){
-                                mySocketMap.get(n).writeLine(nick+": "+line);
-                            }
-                        }  
+        try {
+
+            selector = Selector.open();
+
+            ServerSocketChannel socket = ServerSocketChannel.open();
+            ServerSocket serverSocket = socket.socket();
+
+            serverSocket.bind(new InetSocketAddress("localhost", 8089));
+
+            socket.configureBlocking(false);
+            int ops = socket.validOps();
+            socket.register(selector, ops, null);
+
+            while (true) {
+
+                selector.select();
+                Set<SelectionKey> selectedKeys = selector.selectedKeys();
+                Iterator<SelectionKey> i = selectedKeys.iterator();
+
+                while (i.hasNext()) {
+                    SelectionKey key = i.next();
+
+                    if (key.isAcceptable()) {
+
+                        ServerHandler.handleAccept(socket, key, users, selector);
+
+                    } else if (key.isReadable()) {
+
+                        ServerHandler.handleRead(key, users, selector);
                     }
-                    System.out.println("Connexio tancada: "+nick);
-                    mySocketMap.remove(nick);
-                    socket.close();
-                }catch(Exception e){
-                    e.printStackTrace();
+                    i.remove();
                 }
-                }
-            }.start(); 
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
-}
+
 }
