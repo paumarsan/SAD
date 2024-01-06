@@ -9,7 +9,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 
-public class NIOServer {
+public class Server {
 
     private static Selector selector = null;
     private static HashSet<String> users = new HashSet<>();
