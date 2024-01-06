@@ -8,15 +8,12 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-
 public class Server {
 
     private static Selector selector = null;
     private static HashSet<String> users = new HashSet<>();
 
-
     public static void main(String[] args) {
-
         try {
 
             selector = Selector.open();
@@ -24,7 +21,7 @@ public class Server {
             ServerSocketChannel socket = ServerSocketChannel.open();
             ServerSocket serverSocket = socket.socket();
 
-            serverSocket.bind(new InetSocketAddress("localhost", 8089));
+            serverSocket.bind(new InetSocketAddress("localhost", 5000));
 
             socket.configureBlocking(false);
             int ops = socket.validOps();
@@ -38,13 +35,9 @@ public class Server {
 
                 while (i.hasNext()) {
                     SelectionKey key = i.next();
-
                     if (key.isAcceptable()) {
-
                         ServerHandler.handleAccept(socket, key, users, selector);
-
                     } else if (key.isReadable()) {
-
                         ServerHandler.handleRead(key, users, selector);
                     }
                     i.remove();
