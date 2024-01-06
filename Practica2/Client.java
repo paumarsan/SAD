@@ -16,12 +16,11 @@ public class Client {
     try{
         while((str= bufferedReader.readLine()) != null){
             sc.writeLine(str);
-            System.out.println("\u001b[32mMeesage Sent\u001b[0m\n");
         }
     }catch(NullPointerException ex){
            sc.close();   
     }
-    System.out.println("\u001b[35mClosed Connection\u001b[0m");
+    System.out.println("\u001b[35mConnexio tancada\u001b[0m");
     }
 
     public void threadOutput(MySocket sc){
@@ -35,11 +34,11 @@ public class Client {
 
 public static void main(String[] args){
     Client client = new Client();
-    System.out.print("\u001b[34mIntrocue your nick:\u001b[0m ");
+    System.out.print("Introduce tu nombre: ");
     String nick = "";
     try{
         nick = client.bufferedReader.readLine();
-        System.out.println("Welcome! \u001b[31m" + nick + "\u001b[0m\n");
+        System.out.println("Benvingut! \u001b[31m" + nick + "\u001b[0m\n");
     }catch(Exception e){
         e.printStackTrace();
     }
