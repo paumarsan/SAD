@@ -1,28 +1,26 @@
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.net.ServerSocket;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.io.PrintWriter;
+import java.net.*;
 
 public class MyServerSocket {
-    
-    private MySocket s;
-    private ServerSocket ss;
-    
-    public MyServerSocket(int port) {
+    ServerSocket ss;
+
+    public MyServerSocket(final int port) {
         try {
             ss = new ServerSocket(port);
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
-    
+
     public MySocket accept() {
         try {
-            s = new MySocket(ss.accept());
-            return s;
-        } catch (IOException e) {
+            return new MySocket(ss.accept());
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
     }
+    
 }
