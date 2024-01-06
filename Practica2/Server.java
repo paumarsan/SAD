@@ -1,120 +1,74 @@
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
-public class Server implements Runnable {
+public class MyServer {
+    
+    private static final ConcurrentHashMap<String, MySocket> chm = new ConcurrentHashMap<String, MySocket>();
 
-  public static Map<String, MySocket> clientsMap = new HashMap<String, MySocket>(); 
-  private static final ReentrantReadWriteLock rwl = new ReentrantReadWriteLock();
-  private static final Lock r = rwl.readLock(); 
-  private static final Lock w = rwl.writeLock(); 
-
-  public MySocket mySocket;
-  public static boolean validUser = false;
-  public String nick;
-
-  public Server(String nickName, MySocket mySocket) {
-    this.mySocket = mySocket;
-    this.nick = nickName;
-  }
-
-  public static void main(String[] args) {
-    MyServerSocket server = null;
-    try {
-      server = new MyServerSocket(5000);
-
-      MySocket clientSocket;
-      String name;
-
-      while (true) {
-        clientSocket = server.accept();
-
-        while (!validUser) { 
-          clientSocket.printLine("Nom d'usuari: ");
-          name = clientSocket.readLine();
-
-          if (usedNickName(name)) { 
-            clientSocket.printLine(" " + name + " ja existeix, escull un altre nom d'usuari: ");
-
-          } else {
-            putClient(name, clientSocket); 
-            new Thread(new Server(name, clientSocket)).start(); 
-            validUser = true;
-            clientSocket.printLine("........ " + name + " t'has unit al xat ........");
-            System.out.println("........ " + name + " s'ha unit al xat ........");
-          }
+    public static void main(String[] args) {
+        
+        MyServerSocket ss = new MyServerSocket(Integer.parseInt(args[0]));
+        ExecutorService pool = Executors.newFixedThreadPool(50);
+        
+        while(true) {
+            pool.execute(new Task(ss.accept()));
         }
-        validUser = false;
-
-      }
-    } catch (IOException e) {
-      e.printStackTrace();
-    } finally {
-      server.close();
     }
-  }
 
-  @Override
-  public void run() {
-    sendOthers(nick);
-    closeClient(nick);
-    removeClient(nick);
-  }
-
-  public static boolean usedNickName(String name) {
-    boolean used;
-    r.lock();
-    try {
-      used = clientsMap.containsKey(name); 
-    } finally {
-      r.unlock();
-    }
-    return used;
-  }
-
-  public static void putClient(String name, MySocket clientSocket) {
-    w.lock();
-    try {
-      clientsMap.put(name, clientSocket); 
-    } finally {
-      w.unlock();
-    }
-  }
-
-  public static void closeClient(String nickName) {
-    r.lock();
-    try {
-      clientsMap.get(nickName).close(); 
-    } finally {
-      r.unlock();
-    }
-  }
-
-  public static void removeClient(String nickName) {
-    w.lock();
-    try {
-      clientsMap.remove(nickName); 
-    } finally {
-      w.unlock();
-    }
-  }
-
-  public static void sendOthers(String nickName) {
-    String line;
-    while ((line = clientsMap.get(nickName).readLine()) != null) {
-      r.lock();
-      try {
-        for (HashMap.Entry<String, MySocket> entry : clientsMap.entrySet()) { 
-          if (!entry.getKey().equals(nickName)) {
-            entry.getValue().printLine(nickName + " : " + line);
-          }
+    public static class Task implements Runnable {
+        private MySocket sc;
+        private String name;
+        private String msg;
+        public Task(MySocket s) {
+            sc = s;
         }
-      } finally {
-        r.unlock();
-      }
+        @Override
+        public void run() {
+            while(true) {
+                try {
+                    sc.println("Introdueix nom d'usuari: ");
+                    name = sc.readLine();
+                    if (!chm.containsKey(name)) {
+                        chm.put(name, sc);
+                        System.out.println("USUARI: " + name);
+                        for(MySocket bs : chm.values()) {
+                            bs.println("--- " + name + " s'ha unit al chat" + " ---");
+                        }
+                        break;
+                    } else {
+                        sc.println("Nom d'usuari agafat. Proba altre nom.");
+                    }
+                } catch (IOException ex) {
+                    System.out.println("error");
+                }
+            }
+            while(sc != null) {
+                try {
+                    while((msg = sc.readLine()) != null) {
+                        for(MySocket bs : chm.values()) {
+                            if (sc != bs) {
+                                bs.println(name + ": " + msg);
+                            }
+                        }
+                    }
+                } catch (IOException ex) {
+
+                }
+                break;
+            }
+            System.out.println("USUARI DESCONNECTAT: " + name);
+            chm.remove(name);
+            try {
+                for(MySocket bs : chm.values()) {
+                    if (sc != bs) {
+                        bs.println("--- " + name + " ha abandonat el chat" + " ---");
+                    }
+                }
+            } catch (IOException ex) {
+                
+            }
+        }
     }
-    System.out.println("........ " + nickName + " ha sortit del xat ........");
-  }
 }
