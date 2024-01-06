@@ -1,71 +1,63 @@
 import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.net.Socket;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.net.*;
 
-public class MySocket {
-    
-    private Socket sc;
-    
-    public MySocket(String host, int port) {
-        try {
-            sc = new Socket(host, port);
-        } catch (IOException e) {
+public class MySocket{
+    Socket socket;
+    BufferedReader bufferedReader;
+    PrintWriter printWriter;
+    String nick;
+
+    public MySocket(Socket sock){
+        try{
+            socket = sock;
+            bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            printWriter = new PrintWriter(socket.getOutputStream());
+        }catch(Exception e){
             e.printStackTrace();
         }
     }
-    
-    public MySocket(Socket s) {
-        sc = s;
+
+    public MySocket(String name, String host, int port){
+        try{
+            nick = name;
+            socket = new Socket(host,port);
+            bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            printWriter = new PrintWriter(socket.getOutputStream());
+        }catch(Exception e){
+            e.printStackTrace();
+        }
     }
-    
+
     public String readLine() {
-        InputStream input = myGetInputStream();
-        BufferedReader reader = new BufferedReader(new InputStreamReader(input));
-        String line;
+        String str = "";
         try {
-            line = reader.readLine();
-            return line;
-        } catch (IOException e) {
-            e.printStackTrace();
+            str = bufferedReader.readLine();
+        } catch (Exception e) {
+            return null;
         }
-        return null;
-    }
-    
-    public void println(String line) throws IOException {
-        OutputStream output = myGetOutputStream();
-        PrintWriter writer = new PrintWriter(output, true);
-        writer.println(line);
-    }
-    
-    public InputStream myGetInputStream() {
-        try {
-            return sc.getInputStream();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-    
-    public OutputStream myGetOutputStream() {
-        try {
-            return sc.getOutputStream();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
+        return str;
     }
 
-    public void close() {
-        try {
-            sc.close();
-        } catch (IOException e) {
+    public void writeLine(String line) {
+        if(line!=null){
+            printWriter.println(line);
+            printWriter.flush();
+        }
+    }
+
+    public void close(){
+        try{
+            bufferedReader.close();
+            printWriter.close();
+            socket.close();
+        }catch(Exception e){
             e.printStackTrace();
         }
+    }
+
+    public String getNick(){
+        return nick;
     }
 }
