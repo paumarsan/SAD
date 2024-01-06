@@ -34,11 +34,11 @@ public class Client {
     }
 
 public static void main(String[] args){
-    EchoClient echoClient = new EchoClient();
+    Client client = new Client();
     System.out.print("\u001b[34mIntrocue your nick:\u001b[0m ");
     String nick = "";
     try{
-        nick = echoClient.bufferedReader.readLine();
+        nick = client.bufferedReader.readLine();
         System.out.println("Welcome! \u001b[31m" + nick + "\u001b[0m\n");
     }catch(Exception e){
         e.printStackTrace();
@@ -49,7 +49,7 @@ public static void main(String[] args){
     new Thread(){
         public void run(){
             try{
-                    echoClient.threadInput(sc);
+                    client.threadInput(sc);
             }catch(Exception e ){
                 e.printStackTrace();
             }
@@ -59,7 +59,7 @@ public static void main(String[] args){
     new Thread(){
         public void run(){
             while(true){
-                echoClient.threadOutput(sc);
+                client.threadOutput(sc);
             }         
         }
     }.start();
