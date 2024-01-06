@@ -41,7 +41,7 @@ public class ClientGUI {
     }
 
     public void appendMessage(String message) {
-        chatArea.append(message + "\n");
+        SwingUtilities.invokeLater(() -> chatArea.append(message + "\n"));
     }
 
     private void sendMessage() {
