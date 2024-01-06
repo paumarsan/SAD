@@ -32,6 +32,7 @@ public class Client {
     public void sendMessage(String message) {
         if (mySocket != null) {
             mySocket.writeLine(message);
+            clientGUI.appendMessage(message);
         }
     }
 
