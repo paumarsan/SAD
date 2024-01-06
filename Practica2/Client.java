@@ -7,26 +7,34 @@ public class Client {
   public static final int PORT = 5000;
 
   public static void main(String[] args) throws IOException {
-    MySocket mySocket = new MySocket("localhost", PORT);
+    MySocket sc = new MySocket(args[0], Integer.parseInt(args[1]));
 
-    new Thread(() -> {
-        String input;
-        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-          try {
-            while ((input = in.readLine()) != null) {
-              mySocket.printLine(input);
-          }
-          mySocket.close(); 
-        }catch(IOException e) {
-              e.printStackTrace();
-        }
-    }).start(); 
+    new Thread() {
+            public void run() {
+                String line;
+                BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+                try {
+                    while((line = in.readLine()) != null) {
+                        sc.println(line);
+                    }
+                } catch(IOException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    in.close();
+                } catch (IOException ex) {
+                    e.printStackTrace();
+                }
+            } 
+        }.start();
     
-    new Thread(() -> { 
-        String output;
-        while ((output = mySocket.readLine()) != null) {  
-          System.out.println(output);
-      	}
-    }).start();
-  }
+   new Thread() {
+            public void run() {
+                String line;
+                while((line = sc.readLine()) != null) {
+                    System.out.println(line);
+                }
+            }
+        }.start();
+    }
 }
