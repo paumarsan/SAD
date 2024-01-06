@@ -1,28 +1,28 @@
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-public class MyServerSocket extends ServerSocket {
-    MySocket mySocket;
+public class MyServerSocket {
     
-    public MyServerSocket(int port) throws IOException {
-        super(port);
+    private MySocket s;
+    private ServerSocket ss;
+    
+    public MyServerSocket(int port) {
+        try {
+            ss = new ServerSocket(port);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
-
-    @Override
+    
     public MySocket accept() {
         try {
-            mySocket = new MySocket(super.accept());
+            s = new MySocket(ss.accept());
+            return s;
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return mySocket;
-    }
-
-    public void close() {
-        try {
-            super.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        return null;
     }
 }
