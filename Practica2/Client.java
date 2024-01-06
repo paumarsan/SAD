@@ -6,7 +6,7 @@ import java.io.InputStreamReader;
 public class Client {
     BufferedReader bufferedReader;
 
-    public EchoClient(){
+    public Client(){
         bufferedReader = new BufferedReader(new InputStreamReader(System.in));
     }
 
