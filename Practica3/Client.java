@@ -38,7 +38,7 @@ public class Client {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             Client client = new Client();
-            String nick = JOptionPane.showInputDialog("Introduce tu nombre:");
+            String nick = JOptionPane.showInputDialog("Introdueix el teu nom:");
             client.connectToServer(nick, "localhost", 40000);
         });
     }
