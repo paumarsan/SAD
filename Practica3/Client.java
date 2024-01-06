@@ -9,7 +9,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.util.Scanner;
 
-public class GUIClient {
+public class Client {
 
     JFrame frame;
     GridLayout gridLayout = new GridLayout(1,2);
@@ -138,15 +138,11 @@ public class GUIClient {
                         for(int i = 1; i < (users.length - 1) ; i++){
                             listModel.addElement(users[i]);
                         }
-
-                        //Update list Size
                         updateSize();
-
                     }else{
                         messages.append(msg + "\n");
                     }
                 }
-
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -163,11 +159,8 @@ public class GUIClient {
 
 
         public static void main(String [] args){
-
             try {
-
-
-                GUIClient client = new GUIClient();
+                Client client = new Client();
                 Scanner s = new Scanner(new InputStreamReader(System.in));
     
                 System.out.println("Insereix el teu nom: ");
