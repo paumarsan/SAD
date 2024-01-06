@@ -4,12 +4,10 @@ import java.io.InputStreamReader;
 
 public class Client {
 
-  public static final int PORT = 5000;
-
-  public static void main(String[] args) throws IOException {
-    MySocket sc = new MySocket(args[0], Integer.parseInt(args[1]));
-
-    new Thread() {
+  public static void main(String[] args) {
+        
+        MySocket sc = new MySocket(args[0], Integer.parseInt(args[1]));
+        new Thread() {
             public void run() {
                 String line;
                 BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
@@ -22,9 +20,10 @@ public class Client {
                 }
                 try {
                     in.close();
-                } catch (IOException ex) {
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
+                
             } 
         }.start();
     
