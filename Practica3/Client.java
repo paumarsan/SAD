@@ -44,7 +44,7 @@ public class Client {
 
         JPanel input = new JPanel(new FlowLayout());
         JTextField text = new JTextField(65);
-        JButton send = new JButton("Send");
+        JButton send = new JButton("Enviar");
 
         send.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
@@ -52,7 +52,7 @@ public class Client {
                     String msg = text.getText();
                     if(!(msg.equals(""))){
 
-                        messages.append("Me: " + msg + "\n");
+                        messages.append("Yo: " + msg + "\n");
                         text.setText("");
 
                         ByteBuffer buffer = ByteBuffer.allocate(1024);
@@ -66,7 +66,7 @@ public class Client {
             }
         });
 
-        JButton exit = new JButton("Exit");
+        JButton exit = new JButton("Sortir");
 
         exit.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
@@ -171,7 +171,7 @@ public class Client {
                 buffer.put(nick.getBytes());
                 buffer.flip();
     
-                SocketChannel socketClient = SocketChannel.open(new InetSocketAddress("localhost", 8089));
+                SocketChannel socketClient = SocketChannel.open(new InetSocketAddress("localhost", 5000));
                 socketClient.write(buffer);
                 
                 //Thread lectura.
