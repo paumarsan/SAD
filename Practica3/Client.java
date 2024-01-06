@@ -1,7 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
@@ -32,10 +31,8 @@ public class Client {
         frame = new JFrame(user);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-
         JPanel output = new JPanel(gridLayout);
         
-
         messages = new JTextArea(20, 30);
         messages.setBackground(new Color(192,192,192));
         messages.setEditable(false);
@@ -104,8 +101,6 @@ public class Client {
 
         list.setVisibleRowCount(-1);
         
-        
-
         userList.add(listScrollPane, BorderLayout.CENTER);
 
         frame.add(output, BorderLayout.CENTER);
@@ -154,9 +149,7 @@ public class Client {
         double width = dimension.getWidth() + 5;
         double height = dimension.getHeight() + 5;
         listScrollPane.setMinimumSize(new Dimension((int) width,(int) height));
-        SwingUtilities.updateComponentTreeUI(frame);
     }
-
 
         public static void main(String [] args){
             try {
