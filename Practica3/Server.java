@@ -4,7 +4,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Server {
     public static void main(String[] args) {
         Map<String, MySocket> mySocketMap = new ConcurrentHashMap<String,MySocket>();
-        MyServerSocket myServerSocket = new MyServerSocket(40000);
+        MyServerSocket myServerSocket = new MyServerSocket(5000);
         
         while(true){
             MySocket socket = myServerSocket.accept();
