@@ -40,8 +40,8 @@ public class MyServer {
                     } else {
                         sc.println("Nom d'usuari agafat. Proba altre nom.");
                     }
-                } catch (IOException ex) {
-                    System.out.println("error");
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
             while(sc != null) {
@@ -53,8 +53,8 @@ public class MyServer {
                             }
                         }
                     }
-                } catch (IOException ex) {
-
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
                 break;
             }
@@ -66,8 +66,8 @@ public class MyServer {
                         bs.println("--- " + name + " ha abandonat el chat" + " ---");
                     }
                 }
-            } catch (IOException ex) {
-                
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
     }
