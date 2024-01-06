@@ -1,13 +1,13 @@
 import java.awt.*;
 import javax.swing.*;
 
-public class ChatVisual extends JFrame implements ActionListener {
+public class Chat extends JFrame implements ActionListener {
     private JButton sendButton;
     private JTextField textField;
     private DefaultListModel<String> conversationModel;
     private JList<String> conversationList;
 
-    public ChatVisual() {
+    public Chat() {
         setupUI();
     }
 
